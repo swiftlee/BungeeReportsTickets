@@ -1,6 +1,5 @@
 package org.jm.spigotmc.commands;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -80,10 +79,7 @@ public class ReportCommand extends Command {
 
                             String query = ("INSERT INTO {tablename} (reportUUID, playerUUID, playerReported, viewed, server, " +
                                     "dateTime, flag, reason) VALUES ('{reportUUID}', '{playerUUID}', '{playerReported}', {viewed}," +
-                                    "'{server}', '{dateTime}', '{flag}', '{reason}')").replace("{reportUUID}", reportUUID).replace("{tablename}",
-                                    sName).replace("{playerUUID}", String.valueOf(((ProxiedPlayer) commandSender).getUniqueId())).replace(
-                                            "{playerReported}", uuid).replace("{viewed}", String.valueOf(0)).replace("{server}",
-                                    server).replace("{dateTime}", time).replace("{flag}", Flag.OPEN.toString()).replace("{reason}", reason);
+                                    "'{server}', '{dateTime}', '{flag}', '{reason}')");
 
                             //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
                             //TODO: Clickable GUI with options to resolve issue
@@ -91,7 +87,16 @@ public class ReportCommand extends Command {
 
                             try {
                                 PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                                statement.setString(1, reportUUID);
+                                statement.setString(2, ((ProxiedPlayer) commandSender).getUniqueId().toString());
+                                statement.setString(3, uuid);
+                                statement.setInt(4, 0);
+                                statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
+                                statement.setString(6, time);
+                                statement.setString(7, Flag.OPEN.toString());
+                                statement.setString(8, reason);
                                 statement.execute();
+                                statement.close();
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
