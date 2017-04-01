@@ -45,69 +45,68 @@ public class ReportCommand extends Command {
                         else
                             reason += args[i] + " ";
                     }
+                }
 
-                    ProxiedPlayer target;
+                ProxiedPlayer target;
 
-                    try {
-                        target = plugin.getProxy().getPlayer(args[0]);
-                        String uuid = String.valueOf(target.getUniqueId());
-                        String time;
-                        String server = ((ProxiedPlayer) commandSender).getServer().getInfo().getName();
+                try {
+                    target = plugin.getProxy().getPlayer(args[0]);
+                    String uuid = String.valueOf(target.getUniqueId());
+                    String time;
+                    String server = ((ProxiedPlayer) commandSender).getServer().getInfo().getName();
 
-                        DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
-                        Date date = new Date();
+                    DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+                    Date date = new Date();
 
-                        String reportUUID = UUID.randomUUID().toString();
+                    String reportUUID = UUID.randomUUID().toString();
 
-                        time = df.format(date);
-                        List<String> staff = plugin.getConfig().getStringList("staff");
+                    time = df.format(date);
+                    List<String> staff = plugin.getConfig().getStringList("staff");
 
-                        for (String sName : staff) {
+                    for (String sName : staff) {
 
-                            ProxiedPlayer p = plugin.getProxy().getPlayer(sName);
-                            System.out.print(reason);
+                        ProxiedPlayer p = plugin.getProxy().getPlayer(sName);
+                        System.out.print(reason);
 
-                            if (p != null) {
+                        if (p != null) {
 
-                                TextComponent message = new TextComponent(TextUtils.formatString(
-                                        "{name} &chas reported &r{target}&c. " +
-                                                "&l&7Click here &r&bto see more.").replace("{name}", commandSender.getName()).replace("{target}", target.getName()));
-                                message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fetchdata {uuid}".replace("{uuid}", reportUUID)));
-                                p.sendMessage(message);
-
-                            }
-
-                            String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
-                                    "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
-
-                            //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
-                            //TODO: Clickable GUI with options to resolve issue
-                            //TODO: Create available reports notifications
-
-                            try {
-                                PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
-                                statement.setString(1, reportUUID);
-                                statement.setString(2, ((ProxiedPlayer) commandSender).getUniqueId().toString());
-                                statement.setString(3, uuid);
-                                statement.setInt(4, 0);
-                                statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
-                                statement.setString(6, time);
-                                statement.setString(7, Flag.OPEN.toString());
-                                statement.setString(8, reason);
-                                statement.execute();
-                                statement.close();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
+                            TextComponent message = new TextComponent(TextUtils.formatString(
+                                    "{name} &chas reported &r{target}&c. " +
+                                            "&l&7Click here &r&bto see more.").replace("{name}", commandSender.getName()).replace("{target}", target.getName()));
+                            message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fetchdata {uuid}".replace("{uuid}", reportUUID)));
+                            p.sendMessage(message);
 
                         }
 
-                        commandSender.sendMessage(TextUtils.sendableMsg("&aReport sent! Thank you."));
+                        String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
+                                "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
-                    } catch (NullPointerException e) {
-                        commandSender.sendMessage(TextUtils.sendableMsg("&cThat is an invalid player."));
+                        //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
+                        //TODO: Clickable GUI with options to resolve issue
+                        //TODO: Create available reports notifications
+
+                        try {
+                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
+                            statement.setString(1, reportUUID);
+                            statement.setString(2, ((ProxiedPlayer) commandSender).getUniqueId().toString());
+                            statement.setString(3, uuid);
+                            statement.setInt(4, 0);
+                            statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
+                            statement.setString(6, time);
+                            statement.setString(7, Flag.OPEN.toString());
+                            statement.setString(8, reason);
+                            statement.execute();
+                            statement.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+
                     }
 
+                    commandSender.sendMessage(TextUtils.sendableMsg("&aReport sent! Thank you."));
+
+                } catch (NullPointerException e) {
+                    commandSender.sendMessage(TextUtils.sendableMsg("&cThat is an invalid player."));
                 }
 
             } else {
