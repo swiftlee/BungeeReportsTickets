@@ -9,6 +9,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 import org.jm.spigotmc.core.BungeeReportsTickets;
 import org.jm.spigotmc.core.Flag;
+import org.jm.spigotmc.core.ReportedSelfException;
 import org.jm.spigotmc.utils.TextUtils;
 
 import java.sql.PreparedStatement;
@@ -59,7 +60,7 @@ public class ReportCommand extends Command {
 
                     if (senderUUID.equals(uuid)) {
 
-                        throw new NullPointerException();
+                        throw new ReportedSelfException();
 
                     }
 
@@ -94,10 +95,6 @@ public class ReportCommand extends Command {
                         } catch (SQLException e) {
 
                             e.printStackTrace();
-
-                        } catch (NullPointerException e) {
-
-                            commandSender.sendMessage(TextUtils.sendableMsg("&cYou cannot report &l&fyourself&c!"));
 
                         }
 
@@ -144,6 +141,10 @@ public class ReportCommand extends Command {
 
                 } catch (NullPointerException e) {
                     commandSender.sendMessage(TextUtils.sendableMsg("&cThat is an invalid player."));
+                } catch (ReportedSelfException e) {
+
+                    commandSender.sendMessage(TextUtils.sendableMsg("&cYou cannot report &l&fyourself&c!"));
+
                 }
 
             } else {
