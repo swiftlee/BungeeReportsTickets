@@ -82,7 +82,7 @@ public class ReportCommand extends Command {
 
                         try {
 
-                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(reportExists);
+                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(reportExists.replace("{tableName}", sName));
                             statement.setString(1, sName);
                             statement.setString(2, senderUUID);
                             statement.setString(3, uuid);
@@ -115,7 +115,7 @@ public class ReportCommand extends Command {
 
                         }
 
-                        String query = ("INSERT INTO ? (reportUUID, playerUUID, playerReported, viewed, server, " +
+                        String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
                                 "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
                         //TODO: JSON clickable messages so staff can view all reports. Create pages of reports etc
@@ -123,16 +123,15 @@ public class ReportCommand extends Command {
                         //TODO: Create available reports notifications
 
                         try {
-                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
-                            statement.setString(1, sName);
-                            statement.setString(2, reportUUID);
-                            statement.setString(3, senderUUID);
-                            statement.setString(4, uuid);
-                            statement.setInt(5, 0);
-                            statement.setString(6, ((ProxiedPlayer) commandSender).getServer().toString());
-                            statement.setString(7, time);
-                            statement.setString(8, Flag.OPEN.toString());
-                            statement.setString(9, reason);
+                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
+                            statement.setString(1, reportUUID);
+                            statement.setString(2, senderUUID);
+                            statement.setString(3, uuid);
+                            statement.setInt(4, 0);
+                            statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
+                            statement.setString(6, time);
+                            statement.setString(7, Flag.OPEN.toString());
+                            statement.setString(8, reason);
                             statement.execute();
                             statement.close();
                         } catch (SQLException e) {
