@@ -1,0 +1,4 @@
+name: BungeeRepotsTickets+
+main: org.jm.spigotmc.core.BungeeReportsTickets
+version: 1.0
+author: SwiftLee

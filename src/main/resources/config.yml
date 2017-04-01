@@ -1,0 +1,12 @@
+#MySQL - CHANGE THIS TO MATCH YOUR SETTINGS
+hostname: "localhost"
+port: "3306"
+databasename: "reports"
+username: "root"
+password: "password"
+########
+
+#To add a staff member type: 'Enter', 'Spacebar', '-'
+#<CHECK YOUR SPELLING!>
+staff:
+ - SwiftLee
