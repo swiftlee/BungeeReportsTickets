@@ -2,6 +2,7 @@ package org.jm.spigotmc.commands;
 
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -11,6 +12,7 @@ import org.jm.spigotmc.core.Flag;
 import org.jm.spigotmc.utils.TextUtils;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,8 +52,17 @@ public class ReportCommand extends Command {
                 ProxiedPlayer target;
 
                 try {
+
                     target = plugin.getProxy().getPlayer(args[0]);
                     String uuid = String.valueOf(target.getUniqueId());
+                    String senderUUID = ((ProxiedPlayer) commandSender).getUniqueId().toString();
+
+                    if (senderUUID.equals(uuid)) {
+
+                        throw new NullPointerException();
+
+                    }
+
                     String time;
                     String server = ((ProxiedPlayer) commandSender).getServer().getInfo().getName();
 
@@ -65,6 +76,31 @@ public class ReportCommand extends Command {
 
                     for (String sName : staff) {
 
+                        String reportExists = ("SELECT * FROM {tableName} WHERE playerUUID = '{uuid}' AND playerReported = '{reportedUUID}';");
+
+                        try {
+
+                            PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(reportExists.replace("{uuid}", senderUUID).replace("{reportedUUID}", uuid));
+                            ResultSet set = statement.executeQuery();
+
+                            if (set.first()) {
+
+                                commandSender.sendMessage(TextUtils.sendableMsg("&cYou have already reported &f{player}&c!".replace("{player}", target.getName())));
+                                statement.close();
+                                break;
+
+                            }
+
+                        } catch (SQLException e) {
+
+                            e.printStackTrace();
+
+                        } catch (NullPointerException e) {
+
+                            commandSender.sendMessage(TextUtils.sendableMsg("&cYou cannot report &l&fyourself&c!"));
+
+                        }
+
                         ProxiedPlayer p = plugin.getProxy().getPlayer(sName);
                         System.out.print(reason);
 
@@ -74,6 +110,7 @@ public class ReportCommand extends Command {
                                     "{name} &chas reported &r{target}&c. " +
                                             "&l&7Click here &r&bto see more.").replace("{name}", commandSender.getName()).replace("{target}", target.getName()));
                             message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fetchdata {uuid}".replace("{uuid}", reportUUID)));
+                            message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextUtils.sendableMsg("&b&lClick for report data!")));
                             p.sendMessage(message);
 
                         }
@@ -81,14 +118,14 @@ public class ReportCommand extends Command {
                         String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
                                 "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
-                        //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
-                        //TODO: Clickable GUI with options to resolve issue
+                        //TODO: JSON clickable messages so staff can view all reports. Create pages of reports etc
+                        //TODO: Clickable text with options to resolve issue
                         //TODO: Create available reports notifications
 
                         try {
                             PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
                             statement.setString(1, reportUUID);
-                            statement.setString(2, ((ProxiedPlayer) commandSender).getUniqueId().toString());
+                            statement.setString(2, senderUUID);
                             statement.setString(3, uuid);
                             statement.setInt(4, 0);
                             statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
@@ -111,7 +148,7 @@ public class ReportCommand extends Command {
 
             } else {
 
-                commandSender.sendMessage(TextUtils.sendableMsg("&7/report <player> <reason>"));
+                commandSender.sendMessage(TextUtils.sendableMsg("&7Try: /report <player> <reason>"));
 
             }
 
