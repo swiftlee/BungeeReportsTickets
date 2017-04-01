@@ -78,8 +78,7 @@ public class ReportCommand extends Command {
                             }
 
                             String query = ("INSERT INTO {tablename} (reportUUID, playerUUID, playerReported, viewed, server, " +
-                                    "dateTime, flag, reason) VALUES ('{reportUUID}', '{playerUUID}', '{playerReported}', {viewed}," +
-                                    "'{server}', '{dateTime}', '{flag}', '{reason}')");
+                                    "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?");
 
                             //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
                             //TODO: Clickable GUI with options to resolve issue
