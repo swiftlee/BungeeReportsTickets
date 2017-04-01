@@ -77,15 +77,15 @@ public class ReportCommand extends Command {
 
                             }
 
-                            String query = ("INSERT INTO {tablename} (reportUUID, playerUUID, playerReported, viewed, server, " +
-                                    "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?");
+                            String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
+                                    "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
                             //TODO: JSON clickable messages so staff can view all requests. Create pages of reports etc
                             //TODO: Clickable GUI with options to resolve issue
                             //TODO: Create available reports notifications
 
                             try {
-                                PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                                PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
                                 statement.setString(1, reportUUID);
                                 statement.setString(2, ((ProxiedPlayer) commandSender).getUniqueId().toString());
                                 statement.setString(3, uuid);
