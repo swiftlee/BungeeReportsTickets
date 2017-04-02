@@ -9,6 +9,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import org.jm.spigotmc.commands.FetchDataCommand;
 import org.jm.spigotmc.commands.ReportCommand;
+import org.jm.spigotmc.commands.ReportsCommand;
+import org.jm.spigotmc.listeners.PostLoginListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -89,6 +91,8 @@ public class BungeeReportsTickets extends Plugin {
 
         getProxy().getPluginManager().registerCommand(this, new ReportCommand(this));
         getProxy().getPluginManager().registerCommand(this, new FetchDataCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new ReportsCommand(this));
+        getProxy().getPluginManager().registerListener(this, new PostLoginListener(this));
 
     }
 

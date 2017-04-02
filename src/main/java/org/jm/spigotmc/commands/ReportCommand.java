@@ -131,7 +131,7 @@ public class ReportCommand extends Command {
                             statement.setString(4, name);
                             statement.setString(5, uuid);
                             statement.setInt(6, 0);
-                            statement.setString(7, ((ProxiedPlayer) commandSender).getServer().toString());
+                            statement.setString(7, server);
                             statement.setString(8, time);
                             statement.setString(9, Flag.OPEN.toString());
                             statement.setString(10, reason);

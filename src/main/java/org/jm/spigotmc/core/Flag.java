@@ -8,7 +8,7 @@ public enum Flag {
         if(this==OPEN){return "Open";}
         else if(this==CLOSED){return "Closed";}
         else if(this==DUPLICATE){return "Duplicate";}
-        else if(this==NEED_ADMIN){return "Need Admin";}
+        else if(this==NEED_ADMIN){return "Need_Admin";}
         else{return name();}
     }
 

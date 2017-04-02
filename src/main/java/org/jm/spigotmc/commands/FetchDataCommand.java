@@ -4,8 +4,12 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
 import org.jm.spigotmc.core.BungeeReportsTickets;
+import org.jm.spigotmc.core.Flag;
 import org.jm.spigotmc.core.Report;
 import org.jm.spigotmc.utils.TextUtils;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /*************************************************************************
  *
@@ -37,20 +41,72 @@ public class FetchDataCommand extends Command {
     @Override
     public void execute(CommandSender commandSender, String[] args) {
 
-        if (commandSender.hasPermission("reports.fetchadata")) {
+        if (commandSender.hasPermission("reports.fetchdata")) {
 
-            if (args.length > 0) {
+            if (args.length == 1) {
 
-                commandSender.sendMessage(Report.singleReport(args[0]));
+                new Report(plugin).singleReport(args[0], commandSender.getName());
+
+            } else if (args.length == 2) {
+
+                String query = ("INSERT INTO {tableName} (reportUUID, flag) VALUES (?, ?) ON DUPLICATE KEY UPDATE flag = ?;".replace("{tableName}", commandSender.getName()));
+
+                try {
+
+                    if (args[1].equals(Flag.OPEN.toString())) {
+
+
+                        PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                        statement.setString(1, args[0]);
+                        statement.setString(2, Flag.OPEN.toString());
+                        statement.setString(3, Flag.OPEN.toString());
+                        statement.execute();
+                        commandSender.sendMessage(TextUtils.formatString("&7Flag has been updated to: &aOpen"));
+
+                    } else if (args[1].equals(Flag.CLOSED.toString())) {
+
+                        PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                        statement.setString(1, args[0]);
+                        statement.setString(2, Flag.CLOSED.toString());
+                        statement.setString(3, Flag.CLOSED.toString());
+                        statement.execute();
+                        commandSender.sendMessage(TextUtils.formatString("&7Flag has been updated to: &cClosed"));
+
+                    } else if (args[1].equals(Flag.DUPLICATE.toString())) {
+
+                        PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                        statement.setString(1, args[0]);
+                        statement.setString(2, Flag.DUPLICATE.toString());
+                        statement.setString(3, Flag.DUPLICATE.toString());
+                        statement.execute();
+                        commandSender.sendMessage(TextUtils.formatString("&7Flag has been updated to: &eDuplicate"));
+
+                    } else if (args[1].equals(Flag.NEED_ADMIN.toString())) {
+
+                        PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query);
+                        statement.setString(1, args[0]);
+                        statement.setString(2, Flag.NEED_ADMIN.toString());
+                        statement.setString(3, Flag.NEED_ADMIN.toString());
+                        statement.execute();
+                        commandSender.sendMessage(TextUtils.formatString("&7Flag has been updated to: &bNeed Admin"));
+
+                    }
+
+                } catch (SQLException e) {
+
+                    commandSender.sendMessage(TextUtils.formatString("&cSQLException, ask an admin to check the console."));
+                    e.printStackTrace();
+
+                }
 
             } else {
 
-                commandSender.sendMessage(TextUtils.sendableMsg("&7Try: /fetchdata <UUID>"));
+                commandSender.sendMessage(TextUtils.sendableMsg("&7Try: /fetchdata <UUID> (<optional> flag)"));
 
             }
         } else {
 
-            commandSender.sendMessage("&fUnknown command. Type \"/help\" for help.");
+            commandSender.sendMessage(TextUtils.sendableMsg("&fUnknown command. Type \"/help\" for help."));
 
         }
 
