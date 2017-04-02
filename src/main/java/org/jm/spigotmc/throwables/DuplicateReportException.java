@@ -1,11 +1,11 @@
-package org.jm.spigotmc.core;
+package org.jm.spigotmc.throwables;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
 /*************************************************************************
  *
- * J&M CONFIDENTIAL - @author Jon - 04/01/2017 | 14:33
+ * J&M CONFIDENTIAL - @author Jon - 04/01/2017 | 15:38
  * __________________
  *
  *  [2016] J&M Plugin Development 
@@ -21,25 +21,24 @@ import java.io.PrintWriter;
  * is strictly forbidden unless prior written permission is obtained
  * from J&M Plugin Development.
  */
-public class ReportedSelfException extends Throwable {
-
-    public ReportedSelfException() {
+public class DuplicateReportException extends Throwable {
+    public DuplicateReportException() {
         super();
     }
 
-    public ReportedSelfException(String message) {
+    public DuplicateReportException(String message) {
         super(message);
     }
 
-    public ReportedSelfException(String message, Throwable cause) {
+    public DuplicateReportException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ReportedSelfException(Throwable cause) {
+    public DuplicateReportException(Throwable cause) {
         super(cause);
     }
 
-    protected ReportedSelfException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected DuplicateReportException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

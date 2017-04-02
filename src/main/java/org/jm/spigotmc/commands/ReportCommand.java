@@ -8,9 +8,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 import org.jm.spigotmc.core.BungeeReportsTickets;
-import org.jm.spigotmc.core.DuplicateReportException;
+import org.jm.spigotmc.throwables.DuplicateReportException;
 import org.jm.spigotmc.core.Flag;
-import org.jm.spigotmc.core.ReportedSelfException;
+import org.jm.spigotmc.throwables.ReportedSelfException;
 import org.jm.spigotmc.utils.TextUtils;
 
 import java.sql.PreparedStatement;
@@ -57,7 +57,9 @@ public class ReportCommand extends Command {
 
                     target = plugin.getProxy().getPlayer(args[0]);
                     String uuid = target.getUniqueId().toString();
+                    String name = target.getName();
                     String senderUUID = ((ProxiedPlayer) commandSender).getUniqueId().toString();
+                    String senderName = commandSender.getName();
 
                     if (senderUUID.equals(uuid)) {
 
@@ -78,14 +80,13 @@ public class ReportCommand extends Command {
 
                     for (String sName : staff) {
 
-                        String reportExists = ("SELECT * FROM ? WHERE playerUUID = ? AND playerReported = ?;");
+                        String reportExists = ("SELECT * FROM {tableName} WHERE playerUUID = ? AND playerReportedUUID = ?;");
 
                         try {
 
                             PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(reportExists.replace("{tableName}", sName));
-                            statement.setString(1, sName);
-                            statement.setString(2, senderUUID);
-                            statement.setString(3, uuid);
+                            statement.setString(1, senderUUID);
+                            statement.setString(2, uuid);
                             ResultSet set = statement.executeQuery();
 
                             if (set.first()) {
@@ -108,15 +109,15 @@ public class ReportCommand extends Command {
 
                             TextComponent message = new TextComponent(TextUtils.formatString(
                                     "&7{name} &chas reported &7{target}&c. " +
-                                            "&7Click here &r&bto see more.").replace("{name}", commandSender.getName()).replace("{target}", target.getName()));
+                                            "&bClick here &r&7to see more.").replace("{name}", commandSender.getName()).replace("{target}", target.getName()));
                             message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/fetchdata {uuid}".replace("{uuid}", reportUUID)));
                             message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextUtils.sendableMsg("&b&lClick for report data!")));
                             p.sendMessage(message);
 
                         }
 
-                        String query = ("INSERT INTO {tableName} (reportUUID, playerUUID, playerReported, viewed, server, " +
-                                "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                        String query = ("INSERT INTO {tableName} (reportUUID, playerName, playerUUID, playerReportedName, playerReportedUUID, viewed, server, " +
+                                "dateTime, flag, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
                         //TODO: JSON clickable messages so staff can view all reports. Create pages of reports etc
                         //TODO: Clickable text with options to resolve issue
@@ -125,13 +126,15 @@ public class ReportCommand extends Command {
                         try {
                             PreparedStatement statement = plugin.getMysql().getConnection().prepareStatement(query.replace("{tableName}", sName));
                             statement.setString(1, reportUUID);
-                            statement.setString(2, senderUUID);
-                            statement.setString(3, uuid);
-                            statement.setInt(4, 0);
-                            statement.setString(5, ((ProxiedPlayer) commandSender).getServer().toString());
-                            statement.setString(6, time);
-                            statement.setString(7, Flag.OPEN.toString());
-                            statement.setString(8, reason);
+                            statement.setString(2, senderName);
+                            statement.setString(3, senderUUID);
+                            statement.setString(4, name);
+                            statement.setString(5, uuid);
+                            statement.setInt(6, 0);
+                            statement.setString(7, ((ProxiedPlayer) commandSender).getServer().toString());
+                            statement.setString(8, time);
+                            statement.setString(9, Flag.OPEN.toString());
+                            statement.setString(10, reason);
                             statement.execute();
                             statement.close();
                         } catch (SQLException e) {

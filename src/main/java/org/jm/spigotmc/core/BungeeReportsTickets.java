@@ -7,6 +7,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
+import org.jm.spigotmc.commands.FetchDataCommand;
 import org.jm.spigotmc.commands.ReportCommand;
 
 import java.io.File;
@@ -65,8 +66,8 @@ public class BungeeReportsTickets extends Plugin {
             e1.printStackTrace();
         }
 
-        String query = ("CREATE TABLE IF NOT EXISTS {tablename} (reportUUID VARCHAR(255), playerUUID VARCHAR(255)," +
-                " playerReported VARCHAR(255), viewed TINYINT(0)," +
+        String query = ("CREATE TABLE IF NOT EXISTS {tablename} (reportUUID VARCHAR(255), playerName VARCHAR(255), " +
+                "playerUUID VARCHAR(255), playerReportedName VARCHAR(255), playerReportedUUID VARCHAR(255), viewed TINYINT(0)," +
                 " server VARCHAR(1000), dateTime VARCHAR(255)," +
                 " flag VARCHAR(255), reason VARCHAR(1000), PRIMARY KEY (reportUUID)) " +
                 "DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;");
@@ -86,8 +87,8 @@ public class BungeeReportsTickets extends Plugin {
 
         }
 
-
         getProxy().getPluginManager().registerCommand(this, new ReportCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new FetchDataCommand(this));
 
     }
 
