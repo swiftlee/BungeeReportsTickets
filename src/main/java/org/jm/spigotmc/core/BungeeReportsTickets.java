@@ -7,7 +7,9 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
+import org.jm.spigotmc.commands.DeleteReportCommand;
 import org.jm.spigotmc.commands.FetchDataCommand;
+import org.jm.spigotmc.commands.ReloadConfigCommand;
 import org.jm.spigotmc.commands.ReportCommand;
 import org.jm.spigotmc.commands.ReportsCommand;
 import org.jm.spigotmc.listeners.PostLoginListener;
@@ -92,6 +94,11 @@ public class BungeeReportsTickets extends Plugin {
         getProxy().getPluginManager().registerCommand(this, new ReportCommand(this));
         getProxy().getPluginManager().registerCommand(this, new FetchDataCommand(this));
         getProxy().getPluginManager().registerCommand(this, new ReportsCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new DeleteReportCommand(this));
+        getProxy().getPluginManager().registerCommand(this, new ReloadConfigCommand(this));
+
+
+        //Listeners
         getProxy().getPluginManager().registerListener(this, new PostLoginListener(this));
 
     }

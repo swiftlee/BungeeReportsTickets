@@ -180,7 +180,7 @@ public class Report {
             }
 
             TextComponent delete = new TextComponent(TextUtils.formatString("&c&lDelete"));
-            delete.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deletereport" + reportUUID));
+            delete.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/deletereport " + reportUUID));
             delete.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextUtils.sendableMsg("&4&lTHIS CANNOT BE UNDONE!")));
 
             plugin.getProxy().getPlayer(commandSenderName).sendMessage(TextUtils.formatString(report));
