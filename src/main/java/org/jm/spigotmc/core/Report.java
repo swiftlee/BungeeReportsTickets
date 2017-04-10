@@ -171,7 +171,7 @@ public class Report {
 
             } else if (flag.equalsIgnoreCase(Flag.DUPLICATE.toString())) {
 
-                report = report.replace("{" + Flag.DUPLICATE.toString() + "}", "&e" + Flag.DUPLICATE.toString());
+                report = report.replace("{" + Flag.DUPLICATE.toString() + "}", "&e" + Flag.DUPLICATE.toString()); //I added a comment
 
             } else {
 
